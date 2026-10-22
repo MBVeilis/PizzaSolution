@@ -9,6 +9,7 @@ public class WelcomeController : ControllerBase
     public IActionResult Greet()
     {
         Console.WriteLine("Greeted guest.");
+        Console.WriteLine("The waiter greeted the guest.");
 
         return Ok("Welcome to this automated pizza place.");
     }

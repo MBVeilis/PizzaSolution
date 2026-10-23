@@ -1,6 +1,5 @@
 ﻿using PizzaPlace.Models;
 using PizzaPlace.Models.Types;
-using PizzaPlace.Pizzas;
 
 namespace PizzaPlace.Services;
 
@@ -20,8 +19,13 @@ public class MenuService : IMenuService
             Items: []
         );
 
-        // menuDate TBD
-        // If else sentence
+        var utcTime = menuDate.UtcDateTime.TimeOfDay;
+
+        if (utcTime >= new TimeSpan(11, 0, 0) &&
+            utcTime < new TimeSpan(14, 0, 0))
+        {
+            return lunchMenu;
+        }
 
         return standardMenu;
     }

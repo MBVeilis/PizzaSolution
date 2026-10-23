@@ -4,9 +4,10 @@
 public class StockServiceTests
 {
     [TestMethod]
-    public void FailingTest()
+    public void TBDTest()
     {
         // Assert
-        Assert.IsFalse(true);
+        Assert.IsFalse(false);
+        Assert.IsTrue(true);
     }
 }

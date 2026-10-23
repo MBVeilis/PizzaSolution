@@ -1,0 +1,30 @@
+name: Pizza Tests
+
+on:
+    push:
+    pull_request:
+
+permissions:
+    contents: read
+
+jobs:
+    build-and-test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v6
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v6
+              with:
+                  dotnet-version: 8.0.426
+
+            - name: Restore dependencies
+              run: dotnet restore
+
+            - name: Build solution
+              run: dotnet build --configuration Release --no-restore
+
+            - name: Run PizzaSolution tests
+              run: dotnet test Tests/PizzaPlace.Test/PizzaPlace.Test.csproj --no-build --verbosity normal

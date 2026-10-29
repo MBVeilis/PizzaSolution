@@ -40,6 +40,30 @@ public class RecipeControllerTests
     }
 
     [TestMethod]
+    public async Task GetPizzaRecipes_ReturnsBadRequest()
+    {
+        // Arrange
+        var order = new PizzaOrder([
+            new PizzaAmount(PizzaRecipeType.StandardPizza, 1)
+        ]);
+        const string errorMessage = "Recipe does not exist.";
+
+        var recipeService = new Mock<IRecipeService>(MockBehavior.Strict);
+        recipeService.Setup(x => x.GetPizzaRecipes(order))
+            .ThrowsAsync(new PizzaException(errorMessage));
+
+        var controller = GetController(recipeService, order);
+
+        // Act
+        var actual = await controller.GetPizzaRecipes();
+
+        // Assert
+        Assert.IsInstanceOfType<BadRequestObjectResult>(actual);
+        Assert.AreEqual(errorMessage, ((BadRequestObjectResult)actual).Value);
+        recipeService.VerifyAll();
+    }
+
+    [TestMethod]
     public async Task AddPizzaRecipeTest()
     {
         // Arrange
@@ -60,6 +84,30 @@ public class RecipeControllerTests
         Assert.IsInstanceOfType<OkObjectResult>(actual);
         Assert.AreEqual(recipes, ((OkObjectResult)actual).Value);
 
+        recipeService.VerifyAll();
+    }
+
+    [TestMethod]
+    public async Task AddPizzaRecipe_ReturnsBadRequest()
+    {
+        // Arrange
+        ComparableList<PizzaRecipeDto> recipes = [
+            new PizzaRecipeDto(PizzaRecipeType.ExtremelyTastyPizza, [], 15)
+        ];
+        const string errorMessage = "Recipe already exists.";
+
+        var recipeService = new Mock<IRecipeService>(MockBehavior.Strict);
+        recipeService.Setup(x => x.AddPizzaRecipe(recipes))
+            .ThrowsAsync(new PizzaException(errorMessage));
+
+        var controller = GetController(recipeService, new PizzaOrder([]));
+
+        // Act
+        var actual = await controller.AddPizzaRecipe(recipes);
+
+        // Assert
+        Assert.IsInstanceOfType<BadRequestObjectResult>(actual);
+        Assert.AreEqual(errorMessage, ((BadRequestObjectResult)actual).Value);
         recipeService.VerifyAll();
     }
 }

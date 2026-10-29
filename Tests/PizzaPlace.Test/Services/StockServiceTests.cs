@@ -153,5 +153,9 @@ public class StockServiceTests
         Assert.AreEqual(
             4,
             actual.Single(x => x.StockType == StockType.Tomatoes).Amount);
+
+        // CleanUp
+        await repository.TakeStock(StockType.Dough, 10);
+        await repository.TakeStock(StockType.Tomatoes, 10);
     }
 }

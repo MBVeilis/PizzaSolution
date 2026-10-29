@@ -77,6 +77,7 @@ public class StockServiceTests
         var cleanUpTomatoes = await repository.TakeStock(
             StockType.Tomatoes, 100);
 
+        // Assert
         Assert.AreEqual(cleanUpDough, new StockDto(StockType.Dough, 100));
         Assert.AreEqual(cleanUpTomatoes, new StockDto(StockType.Tomatoes, 100));
     }
@@ -116,6 +117,7 @@ public class StockServiceTests
         var cleanUpTomatoes = await repository.TakeStock(
             StockType.Tomatoes, 100);
 
+        // Assert
         Assert.AreEqual(cleanUpDough, new StockDto(StockType.Dough, 3));
         Assert.AreEqual(cleanUpTomatoes, new StockDto(StockType.Tomatoes, 100));
     }

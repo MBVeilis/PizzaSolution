@@ -1,4 +1,6 @@
 ﻿using PizzaPlace.Models;
+using PizzaPlace.Models.Types;
+using PizzaPlace.Pizzas;
 
 namespace PizzaPlace.Factories;
 
@@ -17,6 +19,33 @@ public class AssemblyLinePizzaOven(TimeProvider timeProvider) : PizzaOven(timePr
 
     protected override void PlanPizzaMaking(IEnumerable<(PizzaRecipeDto Recipe, Guid Guid)> recipeOrders)
     {
-        throw new NotImplementedException();
+        PizzaRecipeType? previousRecipeType = null;
+        var previousPreparationTime = 0;
+
+        foreach (var (recipe, orderGuid) in recipeOrders)
+        {
+            var preparationTime = recipe.CookingTimeMinutes;
+            if (previousRecipeType == recipe.RecipeType)
+            {
+                preparationTime = Math.Max(
+                    MinimumCookingTimeMinutes,
+                    previousPreparationTime - SubsequentPizzaTimeSavingsInMinutes);
+            }
+            else
+            {
+                preparationTime += SetupTimeMinutes;
+            }
+
+            _pizzaQueue.Enqueue((MakePizza(recipe, preparationTime), orderGuid));
+            previousRecipeType = recipe.RecipeType;
+            previousPreparationTime = preparationTime;
+        }
     }
+
+    private Func<Task<Pizza?>> MakePizza(PizzaRecipeDto recipe, int preparationTime) => async () =>
+    {
+        await CookPizza(preparationTime);
+
+        return GetPizza(recipe.RecipeType);
+    };
 }

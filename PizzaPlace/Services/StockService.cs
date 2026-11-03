@@ -4,7 +4,7 @@ using PizzaPlace.Repositories;
 
 namespace PizzaPlace.Services;
 
-public class StockService(FakeStockRepository fakeStockRepository) : IStockService // Will be changed to IStockRepository when a proper Database has been implemeneted.
+public class StockService(IStockRepository stockRepository) : IStockService
 {
     private static Dictionary<StockType, int> GetRequiredIngredients(PizzaOrder order, ComparableList<PizzaRecipeDto> recipeDtos)
     {
@@ -38,7 +38,7 @@ public class StockService(FakeStockRepository fakeStockRepository) : IStockServi
 
         foreach (var (stockType, amount) in required)
         {
-            var stock = await fakeStockRepository.GetStock(stockType);
+            var stock = await stockRepository.GetStock(stockType);
 
             if (stock.Amount < amount)
                 return true;
@@ -54,7 +54,7 @@ public class StockService(FakeStockRepository fakeStockRepository) : IStockServi
 
         foreach (var stockType in Enum.GetValues<StockType>())
         {
-            var stock = await fakeStockRepository.GetStock(stockType);
+            var stock = await stockRepository.GetStock(stockType);
             required.TryGetValue(stockType, out var amountRequired);
 
             result.Add(stock with
@@ -74,7 +74,7 @@ public class StockService(FakeStockRepository fakeStockRepository) : IStockServi
         var updated = new ComparableList<StockDto>();
 
         foreach (var item in stock)
-            updated.Add(await fakeStockRepository.AddToStock(item));
+            updated.Add(await stockRepository.AddToStock(item));
 
         return updated;
     }
